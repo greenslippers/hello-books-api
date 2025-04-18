@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, abort, make_response
 from app.models.book import books
 
 books_bp = Blueprint("books_bp", __name__, url_prefix="/books")
@@ -23,7 +23,7 @@ def get_one_book(book_id):
     try: # add try/except to handle cases when Error occurs
         book_id = int(book_id)
     except: 
-        return {"message": f"book {book_id} not found"}, 400
+        return {"message": f"book {book_id} invalid"}, 400
 
     for book in books:
         if book.id == book_id:
@@ -34,3 +34,16 @@ def get_one_book(book_id):
             }
         
     return {"message": f"book {book_id} not found"}, 404
+
+def validate_book(book_id): # add helper function
+    try: 
+        book_id = int(book_id)
+    except: 
+        response = {"message": f"book {book_id} invalid"}
+        abort(make_response(response, 400))
+
+    for book in books:
+        if book.id == book_id:
+            return book
+    response = {"message": f"book {book_id} not found"}
+    abort(make_response(response, 404))
