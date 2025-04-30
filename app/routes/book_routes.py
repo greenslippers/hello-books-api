@@ -46,6 +46,21 @@ def get_all_books():
     # We could also write the line above as:
     # books = db.session.execute(query).scalars()
 
+    query = query.order_by(Book.id)
+→ Sort by id in ascending order.
+
+query = query.order_by(desc(Book.id))
+→ Sort by id in descending order.
+
+query = query.order_by(Book.title)
+→ Sort by title alphabetically (A–Z).
+
+query = query.order_by(desc(Book.title))
+→ Sort by title in reverse alphabetical order (Z–A).
+
+query = query.order_by(Book.title, Book.id)
+→ Sort by title, then by id within each title group.
+
     books_response = []
     for book in books:
         books_response.append(
