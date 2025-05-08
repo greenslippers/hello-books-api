@@ -2,6 +2,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey
 from typing import Optional
 from ..db import db
+
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .author import Author
@@ -14,7 +15,6 @@ class Book(db.Model):
     author_id: Mapped[Optional[int]] = mapped_column(ForeignKey("author.id"))
     author: Mapped[Optional["Author"]] = relationship(back_populates="books")
     genres: Mapped[list["Genre"]] = relationship(secondary="book_genre", back_populates="books") 
-
 
     def to_dict(self):
         book_as_dict = {}
@@ -31,16 +31,16 @@ class Book(db.Model):
     def from_dict(cls, book_data):
         # Use get() to fetch values that could be undefined to avoid raising an error
         author_id = book_data.get("author_id")
+        genres = book_data.get("genres", [])
 
         new_book = cls(
             title=book_data["title"],
             description=book_data["description"],
-            author_id=author_id
-            )
-        
-        return new_book
-    
+            author_id=author_id,
+            genres=genres
+        )
 
+        return new_book
 
 # class Book:
 #     def __init__(self, id, title, description):
